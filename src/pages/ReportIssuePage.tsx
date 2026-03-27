@@ -11,7 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import BottomNav from "@/components/BottomNav";
+import TopNav from "@/components/TopNav";
 import { categories, regions, sampleIssues } from "@/data/sampleData";
+import { useCreateIssue } from "@/hooks/useIssues";
+import { useAuth } from "@/contexts/AuthContext";
 
 const urgencyLevels = [
   { value: "low", label: "Low", color: "bg-urgency-low", desc: "Minor inconvenience" },
@@ -38,6 +41,8 @@ const sampleConstituencies: Record<string, string[]> = {
 
 const ReportIssuePage = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const createIssue = useCreateIssue();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -69,6 +74,10 @@ const ReportIssuePage = () => {
       toast.error("Please fill in all required fields");
       return;
     }
+    if (!region || !district || !constituency) {
+      toast.error("Please select your location");
+      return;
+    }
     // Check for duplicates
     const possibleDuplicates = sampleIssues.filter(
       (issue) =>
@@ -80,9 +89,24 @@ const ReportIssuePage = () => {
       setShowDuplicates(true);
       return;
     }
-    setSubmitted(true);
-    toast.success("Issue reported successfully!");
-    setTimeout(() => navigate("/feed"), 1500);
+    createIssue.mutate(
+      {
+        title: title.trim(),
+        description: description.trim(),
+        category,
+        region,
+        district,
+        constituency,
+        urgency,
+        image_urls: photos.length > 0 ? photos : undefined,
+      },
+      {
+        onSuccess: () => {
+          setSubmitted(true);
+          setTimeout(() => navigate("/feed"), 1500);
+        },
+      }
+    );
   };
 
   const availableDistricts = region ? sampleDistricts[region] || [] : [];
