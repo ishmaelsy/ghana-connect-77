@@ -29,7 +29,7 @@ export const useIssues = (sort: string = "trending", category?: string | null) =
   return useQuery({
     queryKey: ["issues", sort, category],
     queryFn: async () => {
-      let query = supabase.from("issues").select("*, profiles!inner(display_name)").returns<any[]>();
+      let query = supabase.from("issues").select("*");
 
       if (category) query = query.eq("category", category);
 
@@ -39,9 +39,15 @@ export const useIssues = (sort: string = "trending", category?: string | null) =
 
       const { data, error } = await query.limit(50);
       if (error) throw error;
-      return (data || []).map((d: any) => ({
+
+      // Fetch author names
+      const userIds = [...new Set((data || []).map((d) => d.user_id))];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name").in("user_id", userIds);
+      const nameMap = new Map((profiles || []).map((p) => [p.user_id, p.display_name]));
+
+      return (data || []).map((d) => ({
         ...d,
-        author_name: d.profiles?.display_name || "Anonymous",
+        author_name: nameMap.get(d.user_id) || "Anonymous",
       }));
     },
   });
