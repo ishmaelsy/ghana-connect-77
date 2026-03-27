@@ -14,6 +14,7 @@ export interface Comment {
   created_at: string;
   author_name: string;
   author_avatar?: string;
+  author_role?: string;
   replies?: Comment[];
 }
 
@@ -34,18 +35,24 @@ export const useComments = (issueId: string) => {
       const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, avatar_url").in("user_id", userIds);
       const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
+      // Fetch roles for authors
+      const { data: roles } = await supabase.from("user_roles").select("user_id, role").in("user_id", userIds);
+      const roleMap = new Map((roles || []).map((r) => [r.user_id, r.role]));
+
       const flat = (data || []).map((c: any) => {
         const prof = profileMap.get(c.user_id);
+        const role = roleMap.get(c.user_id);
         return {
           id: c.id,
           user_id: c.user_id,
           issue_id: c.issue_id,
           parent_id: c.parent_id,
           content: c.content,
-          is_official: c.is_official,
+          is_official: c.is_official || (role && role !== "citizen"),
           created_at: c.created_at,
           author_name: prof?.display_name || "Anonymous",
           author_avatar: prof?.avatar_url,
+          author_role: role || "citizen",
         };
       });
 
@@ -83,11 +90,20 @@ export const useAddComment = () => {
     }) => {
       if (!user) throw new Error("Please sign in to comment");
       if (!isUuid(issueId)) throw new Error("Cannot comment on sample issues");
+
+      // Check if user is an official
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+      const isOfficial = (roles || []).some((r) => r.role !== "citizen");
+
       const { error } = await supabase.from("comments").insert({
         user_id: user.id,
         issue_id: issueId,
         content,
         parent_id: parentId || null,
+        is_official: isOfficial,
       });
       if (error) throw error;
 
