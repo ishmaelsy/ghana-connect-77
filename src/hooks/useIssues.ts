@@ -29,7 +29,7 @@ export const useIssues = (sort: string = "trending", category?: string | null) =
   return useQuery({
     queryKey: ["issues", sort, category],
     queryFn: async () => {
-      let query = supabase.from("issues").select("*, profiles!issues_user_id_fkey(display_name)");
+      let query = supabase.from("issues").select("*, profiles!inner(display_name)").returns<any[]>();
 
       if (category) query = query.eq("category", category);
 
