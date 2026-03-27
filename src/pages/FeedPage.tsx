@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Plus, TrendingUp, Clock, AlertTriangle, Filter, LogIn } from "lucide-react";
+import { Plus, TrendingUp, Clock, AlertTriangle, Filter, LogIn, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,7 +16,8 @@ type SortMode = "trending" | "newest" | "urgent";
 const FeedPage = () => {
   const [sort, setSort] = useState<SortMode>("trending");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const { user } = useAuth();
+  const [showMyConstituency, setShowMyConstituency] = useState(false);
+  const { user, profile } = useAuth();
 
   const { data: dbIssues, isLoading } = useIssues(sort, selectedCategory);
 
@@ -44,13 +45,15 @@ const FeedPage = () => {
 
   const allIssues = [...dbAsIssue, ...sampleIssues.filter((s) => !dbAsIssue.find((d) => d.id === s.id))];
 
-  const sortedIssues = [...allIssues]
+  const filteredIssues = allIssues
     .filter((i) => !selectedCategory || i.category === selectedCategory)
-    .sort((a, b) => {
-      if (sort === "trending") return b.magnitudeScore - a.magnitudeScore;
-      if (sort === "urgent") return b.urgency === "critical" ? 1 : -1;
-      return b.daysOpen - a.daysOpen;
-    });
+    .filter((i) => !showMyConstituency || !profile?.constituency || i.constituency === profile.constituency);
+
+  const sortedIssues = [...filteredIssues].sort((a, b) => {
+    if (sort === "trending") return b.magnitudeScore - a.magnitudeScore;
+    if (sort === "urgent") return b.urgency === "critical" ? 1 : -1;
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -70,6 +73,17 @@ const FeedPage = () => {
                 <span className="hidden sm:inline">{s.label}</span>
               </Button>
             ))}
+            {profile?.constituency && (
+              <Button
+                variant={showMyConstituency ? "default" : "ghost"}
+                size="sm"
+                className="text-xs gap-1"
+                onClick={() => setShowMyConstituency(!showMyConstituency)}
+              >
+                <MapPin className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">My Area</span>
+              </Button>
+            )}
             {!user && (
               <Link to="/auth" className="md:hidden">
                 <Button variant="outline" size="sm" className="text-xs gap-1 ml-2">
@@ -92,6 +106,14 @@ const FeedPage = () => {
             </Badge>
           ))}
         </div>
+
+        {showMyConstituency && profile?.constituency && (
+          <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg px-3 py-2 flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">Showing issues in {profile.constituency}</span>
+            <Button variant="ghost" size="sm" className="ml-auto text-xs" onClick={() => setShowMyConstituency(false)}>Show All</Button>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="space-y-3">

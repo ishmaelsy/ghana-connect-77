@@ -1,12 +1,27 @@
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, Star, CheckCircle, Clock, MessageCircle, BarChart3 } from "lucide-react";
+import { ArrowLeft, Star, CheckCircle, Clock, MessageCircle, BarChart3, Send } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { sampleLeaders, sampleIssues } from "@/data/sampleData";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import TopNav from "@/components/TopNav";
 import BottomNav from "@/components/BottomNav";
+import { sampleLeaders, sampleIssues } from "@/data/sampleData";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSubmitRating } from "@/hooks/useLeaderRating";
+import { toast } from "sonner";
 
 const LeaderProfilePage = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const leader = sampleLeaders.find((l) => l.id === id);
+  const submitRating = useSubmitRating();
+
+  const [selectedRating, setSelectedRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [review, setReview] = useState("");
+  const [showRatingForm, setShowRatingForm] = useState(false);
 
   if (!leader) {
     return (
@@ -22,18 +37,34 @@ const LeaderProfilePage = () => {
   const constituencyIssues = sampleIssues.filter((i) => i.constituency === leader.constituency);
   const ignoredIssues = constituencyIssues.filter((i) => !i.hasOfficialResponse && i.magnitudeScore > 500);
 
+  const handleSubmitRating = () => {
+    if (selectedRating === 0) {
+      toast.error("Please select a rating");
+      return;
+    }
+    // For sample leaders, use the leader id as a placeholder
+    // In production, this would be the leader's actual user_id
+    submitRating.mutate(
+      { leaderUserId: leader.id, rating: selectedRating, review },
+      {
+        onSuccess: () => {
+          setShowRatingForm(false);
+          setSelectedRating(0);
+          setReview("");
+        },
+      }
+    );
+  };
+
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto flex items-center h-14 px-4 gap-3">
-          <Link to="/leaderboard" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <h1 className="font-display font-semibold text-foreground truncate text-sm">Leader Profile</h1>
-        </div>
-      </header>
+      <TopNav />
 
       <div className="container mx-auto px-4 py-6 max-w-2xl">
+        <Link to="/leaderboard" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
+          <ArrowLeft className="w-4 h-4" /> Back to Leaders
+        </Link>
+
         {/* Profile Card */}
         <div className="bg-card border border-border rounded-xl p-6 mb-6">
           <div className="flex items-center gap-4 mb-4">
@@ -64,7 +95,61 @@ const LeaderProfilePage = () => {
             <span className="font-display text-2xl font-bold text-foreground">{leader.rating.toFixed(1)}</span>
             <span className="text-sm text-muted-foreground">({leader.totalRatings.toLocaleString()} ratings)</span>
           </div>
+
+          {/* Rate Button */}
+          {user ? (
+            <Button size="sm" variant="outline" className="gap-1" onClick={() => setShowRatingForm(!showRatingForm)}>
+              <Star className="w-4 h-4" /> {showRatingForm ? "Cancel" : "Rate this Leader"}
+            </Button>
+          ) : (
+            <Link to="/auth">
+              <Button size="sm" variant="outline" className="gap-1">
+                <Star className="w-4 h-4" /> Sign in to Rate
+              </Button>
+            </Link>
+          )}
         </div>
+
+        {/* Rating Form */}
+        {showRatingForm && (
+          <Card className="mb-6 border-secondary/30">
+            <CardContent className="p-5 space-y-4">
+              <h3 className="font-display font-semibold text-foreground">Rate {leader.name}</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground mr-2">Your rating:</span>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => setSelectedRating(star)}
+                    className="transition-transform hover:scale-110"
+                  >
+                    <Star
+                      className={`w-8 h-8 transition-colors ${
+                        star <= (hoverRating || selectedRating)
+                          ? "fill-secondary text-secondary"
+                          : "text-border"
+                      }`}
+                    />
+                  </button>
+                ))}
+                {selectedRating > 0 && (
+                  <span className="font-display text-lg font-bold text-foreground ml-2">{selectedRating}/5</span>
+                )}
+              </div>
+              <Textarea
+                value={review}
+                onChange={(e) => setReview(e.target.value)}
+                placeholder="Write a review (optional)..."
+                className="min-h-[80px]"
+              />
+              <Button onClick={handleSubmitRating} disabled={submitRating.isPending} className="gap-1">
+                <Send className="w-4 h-4" /> Submit Rating
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-6">

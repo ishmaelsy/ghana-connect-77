@@ -1,14 +1,15 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BarChart3, Award, Bell, MapPin, LogIn, LogOut, Plus } from "lucide-react";
+import { Home, BarChart3, Award, Bell, MapPin, LogIn, LogOut, Plus, User, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 
 const navLinks = [
   { to: "/feed", label: "Feed", icon: Home },
+  { to: "/my-constituency", label: "My Area", icon: MapPin },
   { to: "/priority-board", label: "Priority Board", icon: BarChart3 },
   { to: "/leaderboard", label: "Leaderboard", icon: Award },
   { to: "/notifications", label: "Notifications", icon: Bell },
-  { to: "/national-map", label: "Dashboard", icon: MapPin },
+  { to: "/national-map", label: "Dashboard", icon: Shield },
 ];
 
 const TopNav = () => {
@@ -43,11 +44,18 @@ const TopNav = () => {
 
         <div className="flex items-center gap-2">
           {user && (
-            <Link to="/report">
-              <Button size="sm" variant="secondary" className="text-xs gap-1">
-                <Plus className="w-3.5 h-3.5" /> Report
-              </Button>
-            </Link>
+            <>
+              <Link to="/report">
+                <Button size="sm" variant="secondary" className="text-xs gap-1">
+                  <Plus className="w-3.5 h-3.5" /> Report
+                </Button>
+              </Link>
+              <Link to="/profile">
+                <Button size="sm" variant="ghost" className="text-xs gap-1">
+                  <User className="w-3.5 h-3.5" /> Profile
+                </Button>
+              </Link>
+            </>
           )}
           {user ? (
             <Button size="sm" variant="ghost" className="text-xs gap-1" onClick={signOut}>
