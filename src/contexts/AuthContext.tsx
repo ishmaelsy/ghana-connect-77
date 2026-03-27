@@ -2,11 +2,20 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+interface ProfileData {
+  display_name: string;
+  constituency?: string;
+  region?: string;
+  avatar_url?: string;
+  bio?: string;
+  district?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  profile: { display_name: string; constituency?: string; region?: string; avatar_url?: string } | null;
+  profile: ProfileData | null;
   signOut: () => Promise<void>;
 }
 
@@ -24,7 +33,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<AuthContextType["profile"]>(null);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -46,7 +55,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (!user) { setProfile(null); return; }
     supabase
       .from("profiles")
-      .select("display_name, constituency, region, avatar_url")
+      .select("display_name, constituency, region, avatar_url, bio, district")
       .eq("user_id", user.id)
       .single()
       .then(({ data }) => { if (data) setProfile(data); });

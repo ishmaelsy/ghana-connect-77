@@ -1,9 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Award, BarChart3, Bell, User } from "lucide-react";
+import { Home, Award, BarChart3, Bell, User, MapPin } from "lucide-react";
 
 const navItems = [
   { to: "/feed", label: "Feed", icon: Home },
-  { to: "/priority-board", label: "Priority", icon: BarChart3 },
+  { to: "/my-constituency", label: "My Area", icon: MapPin },
   { to: "/leaderboard", label: "Leaders", icon: Award },
   { to: "/notifications", label: "Alerts", icon: Bell },
   { to: "/profile", label: "Profile", icon: User },

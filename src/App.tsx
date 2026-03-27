@@ -15,6 +15,9 @@ import ReportIssuePage from "./pages/ReportIssuePage";
 import NotificationsPage from "./pages/NotificationsPage";
 import PresidentialDashboard from "./pages/PresidentialDashboard";
 import AuthPage from "./pages/AuthPage";
+import ProfilePage from "./pages/ProfilePage";
+import OfficialDashboard from "./pages/OfficialDashboard";
+import MyConstituencyPage from "./pages/MyConstituencyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +41,9 @@ const App = () => (
             <Route path="/report" element={<ReportIssuePage />} />
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/national-map" element={<PresidentialDashboard />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/official-dashboard" element={<OfficialDashboard />} />
+            <Route path="/my-constituency" element={<MyConstituencyPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
