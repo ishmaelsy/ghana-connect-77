@@ -10,6 +10,9 @@ import LeaderboardPage from "./pages/LeaderboardPage";
 import LeaderProfilePage from "./pages/LeaderProfilePage";
 import PriorityBoardPage from "./pages/PriorityBoardPage";
 import ConstituencyPage from "./pages/ConstituencyPage";
+import ReportIssuePage from "./pages/ReportIssuePage";
+import NotificationsPage from "./pages/NotificationsPage";
+import PresidentialDashboard from "./pages/PresidentialDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +31,9 @@ const App = () => (
           <Route path="/leader/:id" element={<LeaderProfilePage />} />
           <Route path="/priority-board" element={<PriorityBoardPage />} />
           <Route path="/constituency/:id" element={<ConstituencyPage />} />
+          <Route path="/report" element={<ReportIssuePage />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/national-map" element={<PresidentialDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
