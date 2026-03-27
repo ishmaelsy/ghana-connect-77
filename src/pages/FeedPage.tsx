@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import IssueCard from "@/components/IssueCard";
 import BottomNav from "@/components/BottomNav";
+import TopNav from "@/components/TopNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIssues, type DbIssue } from "@/hooks/useIssues";
 import { sampleIssues, categories, type Issue } from "@/data/sampleData";
-import logo from "@/assets/ghana-star-logo.png";
 
 type SortMode = "trending" | "newest" | "urgent";
 
@@ -55,7 +55,7 @@ const FeedPage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
+      <TopNav />
         <div className="container mx-auto flex items-center justify-between h-14 px-4">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Ghana CIT" width={28} height={28} className="w-7 h-7" />

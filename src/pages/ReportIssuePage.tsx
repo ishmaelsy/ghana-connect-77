@@ -132,6 +132,7 @@ const ReportIssuePage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-8">
+      <TopNav />
       {/* Header */}
       <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
         <div className="container mx-auto flex items-center h-14 px-4 gap-3">
