@@ -23,10 +23,19 @@ const IssueDetailPage = () => {
   const { data: dbIssue, isLoading } = useIssue(id || "");
   const sampleIssue = sampleIssues.find((i) => i.id === id);
   const issue = dbIssue || (sampleIssue ? {
-    ...sampleIssue,
+    id: sampleIssue.id,
+    title: sampleIssue.title,
+    description: sampleIssue.description,
+    category: sampleIssue.category,
+    constituency: sampleIssue.constituency,
+    region: sampleIssue.region,
+    district: sampleIssue.district,
+    urgency: sampleIssue.urgency,
+    status: sampleIssue.status,
     upvotes_count: sampleIssue.upvotes,
     me_too_count: sampleIssue.meTooCount,
     comments_count: sampleIssue.commentsCount,
+    magnitude_score: sampleIssue.magnitudeScore,
     has_official_response: sampleIssue.hasOfficialResponse,
     author_name: sampleIssue.authorName,
     created_at: sampleIssue.createdAt,
