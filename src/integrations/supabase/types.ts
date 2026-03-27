@@ -14,16 +14,360 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_official: boolean
+          issue_id: string
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_official?: boolean
+          issue_id: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_official?: boolean
+          issue_id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      issues: {
+        Row: {
+          category: string
+          comments_count: number
+          constituency: string
+          created_at: string
+          description: string
+          district: string
+          has_official_response: boolean
+          id: string
+          image_urls: string[] | null
+          magnitude_score: number
+          me_too_count: number
+          region: string
+          status: string
+          title: string
+          updated_at: string
+          upvotes_count: number
+          urgency: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          comments_count?: number
+          constituency: string
+          created_at?: string
+          description: string
+          district: string
+          has_official_response?: boolean
+          id?: string
+          image_urls?: string[] | null
+          magnitude_score?: number
+          me_too_count?: number
+          region: string
+          status?: string
+          title: string
+          updated_at?: string
+          upvotes_count?: number
+          urgency?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          comments_count?: number
+          constituency?: string
+          created_at?: string
+          description?: string
+          district?: string
+          has_official_response?: boolean
+          id?: string
+          image_urls?: string[] | null
+          magnitude_score?: number
+          me_too_count?: number
+          region?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          upvotes_count?: number
+          urgency?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leader_ratings: {
+        Row: {
+          created_at: string
+          id: string
+          leader_user_id: string
+          month_year: string
+          rating: number
+          review: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          leader_user_id: string
+          month_year: string
+          rating: number
+          review?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          leader_user_id?: string
+          month_year?: string
+          rating?: number
+          review?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      me_too_reports: {
+        Row: {
+          created_at: string
+          id: string
+          issue_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "me_too_reports_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          issue_id: string | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          issue_id?: string | null
+          message: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          issue_id?: string | null
+          message?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      priority_votes: {
+        Row: {
+          created_at: string
+          id: string
+          issue_id: string
+          month_year: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_id: string
+          month_year: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_id?: string
+          month_year?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "priority_votes_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          constituency: string | null
+          created_at: string
+          display_name: string
+          district: string | null
+          id: string
+          region: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          constituency?: string | null
+          created_at?: string
+          display_name: string
+          district?: string | null
+          id?: string
+          region?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          constituency?: string | null
+          created_at?: string
+          display_name?: string
+          district?: string | null
+          id?: string
+          region?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          issue_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          issue_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          issue_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "upvotes_issue_id_fkey"
+            columns: ["issue_id"]
+            isOneToOne: false
+            referencedRelation: "issues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      calculate_magnitude: {
+        Args: {
+          _comments: number
+          _days_open: number
+          _me_too: number
+          _upvotes: number
+          _urgency: string
+        }
+        Returns: number
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "citizen" | "mp" | "minister" | "dce" | "president" | "admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +494,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["citizen", "mp", "minister", "dce", "president", "admin"],
+    },
   },
 } as const
