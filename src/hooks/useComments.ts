@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { isUuid } from "@/lib/isUuid";
 
 export interface Comment {
   id: string;
@@ -62,7 +63,7 @@ export const useComments = (issueId: string) => {
       });
       return roots;
     },
-    enabled: !!issueId,
+    enabled: !!issueId && isUuid(issueId),
   });
 };
 
@@ -81,6 +82,7 @@ export const useAddComment = () => {
       parentId?: string;
     }) => {
       if (!user) throw new Error("Please sign in to comment");
+      if (!isUuid(issueId)) throw new Error("Cannot comment on sample issues");
       const { error } = await supabase.from("comments").insert({
         user_id: user.id,
         issue_id: issueId,

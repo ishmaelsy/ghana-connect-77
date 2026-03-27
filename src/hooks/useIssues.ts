@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { isUuid } from "@/lib/isUuid";
 
 export type DbIssue = {
   id: string;
@@ -72,7 +73,7 @@ export const useIssue = (id: string) => {
 
       return { ...data, author_name: profile?.display_name || "Anonymous" };
     },
-    enabled: !!id,
+    enabled: !!id && isUuid(id),
   });
 };
 
@@ -83,6 +84,7 @@ export const useUpvote = () => {
   return useMutation({
     mutationFn: async (issueId: string) => {
       if (!user) throw new Error("Please sign in to upvote");
+      if (!isUuid(issueId)) throw new Error("Cannot upvote sample issues — report a real one!");
       // Check if already upvoted
       const { data: existing } = await supabase
         .from("upvotes")
@@ -121,6 +123,7 @@ export const useMeToo = () => {
   return useMutation({
     mutationFn: async (issueId: string) => {
       if (!user) throw new Error("Please sign in to report");
+      if (!isUuid(issueId)) throw new Error("Cannot report sample issues — report a real one!");
       const { data: existing } = await supabase
         .from("me_too_reports")
         .select("id")

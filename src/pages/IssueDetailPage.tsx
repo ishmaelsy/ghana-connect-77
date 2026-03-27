@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import BottomNav from "@/components/BottomNav";
+import TopNav from "@/components/TopNav";
 import ShareButtons from "@/components/ShareButtons";
 import CommentNode from "@/components/CommentThread";
 import { useAuth } from "@/contexts/AuthContext";
@@ -94,14 +95,15 @@ const IssueDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto flex items-center h-14 px-4 gap-3">
+      <TopNav />
+      <div className="sticky top-0 md:top-14 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
+        <div className="container mx-auto flex items-center h-12 px-4 gap-3">
           <Link to="/feed" className="text-muted-foreground hover:text-foreground transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <h1 className="font-display font-semibold text-foreground truncate text-sm">Issue Details</h1>
         </div>
-      </header>
+      </div>
 
       <div className="container mx-auto px-4 py-6 max-w-2xl">
         {/* Badges */}

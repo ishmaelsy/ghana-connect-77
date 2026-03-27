@@ -6,10 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import IssueCard from "@/components/IssueCard";
 import BottomNav from "@/components/BottomNav";
+import TopNav from "@/components/TopNav";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIssues, type DbIssue } from "@/hooks/useIssues";
 import { sampleIssues, categories, type Issue } from "@/data/sampleData";
-import logo from "@/assets/ghana-star-logo.png";
 
 type SortMode = "trending" | "newest" | "urgent";
 
@@ -20,7 +20,6 @@ const FeedPage = () => {
 
   const { data: dbIssues, isLoading } = useIssues(sort, selectedCategory);
 
-  // Merge DB issues with sample data for demo
   const dbAsIssue = (dbIssues || []).map((d: DbIssue): Issue => ({
     id: d.id,
     title: d.title,
@@ -55,12 +54,11 @@ const FeedPage = () => {
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
-      <header className="sticky top-0 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
-        <div className="container mx-auto flex items-center justify-between h-14 px-4">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Ghana CIT" width={28} height={28} className="w-7 h-7" />
-            <span className="font-display font-bold text-foreground">CIT</span>
-          </Link>
+      <TopNav />
+
+      <div className="sticky top-0 md:top-14 z-40 bg-background/90 backdrop-blur-lg border-b border-border">
+        <div className="container mx-auto flex items-center justify-between h-12 px-4">
+          <span className="font-display font-bold text-foreground text-sm md:hidden">🇬🇭 CIT</span>
           <div className="flex items-center gap-1">
             {([
               { key: "trending", label: "Trending", icon: TrendingUp },
@@ -73,7 +71,7 @@ const FeedPage = () => {
               </Button>
             ))}
             {!user && (
-              <Link to="/auth">
+              <Link to="/auth" className="md:hidden">
                 <Button variant="outline" size="sm" className="text-xs gap-1 ml-2">
                   <LogIn className="w-3.5 h-3.5" /> Sign In
                 </Button>
@@ -81,7 +79,7 @@ const FeedPage = () => {
             )}
           </div>
         </div>
-      </header>
+      </div>
 
       <div className="container mx-auto px-4 py-4">
         <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide mb-4">
