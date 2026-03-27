@@ -33,17 +33,20 @@ export const useComments = (issueId: string) => {
       const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, avatar_url").in("user_id", userIds);
       const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
-      const flat = (data || []).map((c: any) => ({
-        id: c.id,
-        user_id: c.user_id,
-        issue_id: c.issue_id,
-        parent_id: c.parent_id,
-        content: c.content,
-        is_official: c.is_official,
-        created_at: c.created_at,
-        author_name: c.profiles?.display_name || "Anonymous",
-        author_avatar: c.profiles?.avatar_url,
-      }));
+      const flat = (data || []).map((c: any) => {
+        const prof = profileMap.get(c.user_id);
+        return {
+          id: c.id,
+          user_id: c.user_id,
+          issue_id: c.issue_id,
+          parent_id: c.parent_id,
+          content: c.content,
+          is_official: c.is_official,
+          created_at: c.created_at,
+          author_name: prof?.display_name || "Anonymous",
+          author_avatar: prof?.avatar_url,
+        };
+      });
 
       // Build thread tree
       const roots: Comment[] = [];
