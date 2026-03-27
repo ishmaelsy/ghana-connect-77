@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/contexts/AuthContext";
 import LandingPage from "./pages/LandingPage";
 import FeedPage from "./pages/FeedPage";
 import IssueDetailPage from "./pages/IssueDetailPage";
@@ -13,31 +14,35 @@ import ConstituencyPage from "./pages/ConstituencyPage";
 import ReportIssuePage from "./pages/ReportIssuePage";
 import NotificationsPage from "./pages/NotificationsPage";
 import PresidentialDashboard from "./pages/PresidentialDashboard";
+import AuthPage from "./pages/AuthPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/feed" element={<FeedPage />} />
-          <Route path="/issue/:id" element={<IssueDetailPage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/leader/:id" element={<LeaderProfilePage />} />
-          <Route path="/priority-board" element={<PriorityBoardPage />} />
-          <Route path="/constituency/:id" element={<ConstituencyPage />} />
-          <Route path="/report" element={<ReportIssuePage />} />
-          <Route path="/notifications" element={<NotificationsPage />} />
-          <Route path="/national-map" element={<PresidentialDashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/auth" element={<AuthPage />} />
+            <Route path="/feed" element={<FeedPage />} />
+            <Route path="/issue/:id" element={<IssueDetailPage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
+            <Route path="/leader/:id" element={<LeaderProfilePage />} />
+            <Route path="/priority-board" element={<PriorityBoardPage />} />
+            <Route path="/constituency/:id" element={<ConstituencyPage />} />
+            <Route path="/report" element={<ReportIssuePage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/national-map" element={<PresidentialDashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 
