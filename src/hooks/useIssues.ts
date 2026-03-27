@@ -59,11 +59,18 @@ export const useIssue = (id: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("issues")
-        .select("*, profiles!issues_user_id_fkey(display_name, avatar_url)")
+        .select("*")
         .eq("id", id)
         .single();
       if (error) throw error;
-      return { ...data, author_name: data.profiles?.display_name || "Anonymous" };
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name, avatar_url")
+        .eq("user_id", data.user_id)
+        .single();
+
+      return { ...data, author_name: profile?.display_name || "Anonymous" };
     },
     enabled: !!id,
   });

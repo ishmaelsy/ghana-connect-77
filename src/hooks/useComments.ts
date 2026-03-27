@@ -22,11 +22,16 @@ export const useComments = (issueId: string) => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("comments")
-        .select("*, profiles!comments_user_id_fkey(display_name, avatar_url)")
+        .select("*")
         .eq("issue_id", issueId)
         .order("created_at", { ascending: true });
 
       if (error) throw error;
+
+      // Fetch profiles for comment authors
+      const userIds = [...new Set((data || []).map((c) => c.user_id))];
+      const { data: profiles } = await supabase.from("profiles").select("user_id, display_name, avatar_url").in("user_id", userIds);
+      const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
       const flat = (data || []).map((c: any) => ({
         id: c.id,
